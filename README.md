@@ -44,4 +44,4 @@ This bot is deployed on [Hack Club Nest](https://nest.hackclub.com) using system
 - [Node.js](https://nodejs.org)
 - [Slack Bolt](https://slack.dev/bolt-js)
 
-Built as part of [Hack Club Stardance Program](https://hackclub.com/stardance).
+Built as part of [Hack Club Stardance Program](https://stardance.space).
