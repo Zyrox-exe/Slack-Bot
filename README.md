@@ -11,6 +11,7 @@ A simple Slack bot built for Hack Club Stardance.
 | `/birdie-help` | Show the help menu |
 | `/birdie-ping` | Check if the bot is online |
 | `/birdie-pixel [animal]` | Get a photo and random fact about the given animal |
+| `/birdie-fact` | Get a useless fact you never needed |
 
 ## Setup
 
