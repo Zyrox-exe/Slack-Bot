@@ -27,7 +27,7 @@ app.command("/birdie-help", async ({ ack, respond }) => {
 `Available Commands:
 /birdie-help - Open this menu
 /birdie-ping - Check bot latency
-/birdie-fact - Get a cat fact
+/birdie-catfact - Get a cat fact
 /birdie-joke - Listen to a Joke
 /birdie-pixel - Get an image and a fact of the animal you choose!(The animal library is kinda small for now)`
   });
