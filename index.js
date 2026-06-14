@@ -32,43 +32,43 @@ app.command("/birdie-help", async ({ ack, respond }) => {
 /birdie-pixel - Get an image and a fact of the animal you choose!(The animal library is kinda small for now)`
   });
 });
-app.command("/birdie-catfact", async ({ ack, respond }) => {
+app.command("/birdie-catfact", async ({ ack, say }) => {
   await ack();
 
   try {
     const response = await axios.get("https://catfact.ninja/fact");
-    await respond({ text: `Cat Fact:\n${response.data.fact}` });
+    await say({ text: `:cat_blob:Cat Fact:\n${response.data.fact}` });
   } catch (err) {
-    await respond({ text: "Failed to fetch a cat fact." });
+    await say({ text: "Failed to fetch a cat fact." });
   }
 });
-app.command("/birdie-joke", async ({ ack, respond }) => {
+app.command("/birdie-joke", async ({ ack, say }) => {
   await ack();
 
   try {
     const response = await axios.get("https://official-joke-api.appspot.com/random_joke");
-    await respond({
+    await say({
       text:
 `${response.data.setup}
 
-${response.data.punchline}`
+${response.data.punchline}:cat_laugh:`
     });
   } catch (err) {
-    await respond({ text: "Failed to fetch a joke." });
+    await say({ text: "Failed to fetch a joke." });
   }
 });
-app.command('/birdie-pixel', async ({ command, ack, respond }) => {
+app.command('/birdie-pixel', async ({ command, ack, say }) => {
   await ack();
 
   const animal = command.text.trim().toLowerCase();
 
   if (!animal) {
-    await respond(`Which animal would you like to see?? Currently Supported: ${SUPPORTED_ANIMALS.join(', ')}`);
+    await say(`Which animal would you like to see?? Currently Supported: ${SUPPORTED_ANIMALS.join(', ')}`);
     return;
   }
 
   if (!SUPPORTED_ANIMALS.includes(animal)) {
-    await respond(`Sorry, I don't have pictures of "${animal}" yet. Currently Available animals are: ${SUPPORTED_ANIMALS.join('\n')}`);
+    await say(`Sorry, I don't have pictures of "${animal}" yet. Currently Available animals are: ${SUPPORTED_ANIMALS.join('\n')}`);
     return;
   }
 
@@ -76,7 +76,7 @@ app.command('/birdie-pixel', async ({ command, ack, respond }) => {
     const res = await fetch(`https://some-random-api.com/animal/${animal}`);
     const data = await res.json();
 
-    await respond({
+    await say({
       blocks: [
         {
           type: "image",
@@ -93,6 +93,6 @@ app.command('/birdie-pixel', async ({ command, ack, respond }) => {
     });
   } catch (err) {
     console.error(err);
-    await respond("Oops, something went wrong fetching that image.");
+    await say("Oops, something went wrong fetching that image.");
   }
 });
