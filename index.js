@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require("axios");
 const { App } = require("@slack/bolt");
+const SUPPORTED_ANIMALS = ['dog','cat','panda','fox','koala','bird','raccoon','kangaroo','red_panda','whale','birb']
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -27,7 +28,8 @@ app.command("/birdie-help", async ({ ack, respond }) => {
 /birdie-help - Open this menu
 /birdie-ping - Check bot latency
 /birdie-fact - Get a cat fact
-/birdie-joke - Listen to a Joke`
+/birdie-joke - Listen to a Joke
+/birdie-pixel - Get an image and a fact of the animal you choose!(The animal library is kinda small for now)`
   });
 });
 app.command("/birdie-catfact", async ({ ack, respond }) => {
@@ -53,5 +55,44 @@ ${response.data.punchline}`
     });
   } catch (err) {
     await respond({ text: "Failed to fetch a joke." });
+  }
+});
+app.command('/birdie-pixel', async ({ command, ack, respond }) => {
+  await ack();
+
+  const animal = command.text.trim().toLowerCase();
+
+  if (!animal) {
+    await respond(`Which animal would you like to see?? Currently Supported: ${SUPPORTED_ANIMALS.join(', ')}`);
+    return;
+  }
+
+  if (!SUPPORTED_ANIMALS.includes(animal)) {
+    await respond(`Sorry, I don't have pictures of "${animal}" yet. Currently Available animals are: ${SUPPORTED_ANIMALS.join('\n')}`);
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://some-random-api.com/animal/${animal}`);
+    const data = await res.json();
+
+    await respond({
+      blocks: [
+        {
+          type: "image",
+          image_url: data.image,
+          alt_text: animal
+        },
+        {
+          type: "context",
+          elements: [
+            { type: "mrkdwn", text: `🐾 *${animal}* fact: ${data.fact}` }
+          ]
+        }
+      ]
+    });
+  } catch (err) {
+    console.error(err);
+    await respond("Oops, something went wrong fetching that image.");
   }
 });
