@@ -141,19 +141,23 @@ app.command("/birdie-fact", async ({ ack, respond }) => {
   }
 });
 
-app.command('/birdie-weathertoday', async ({ command, ack, say }) => {
-  // 1. ACKNOWLEDGE IMMEDIATELY
+app.command('/birdie-weathertoday', async ({ command, ack, respond }) => {
+  // 1. Acknowledge immediately to avoid timeout
   await ack(); 
   
   const city = command.text.trim();
   
-  // 2. Perform the logic
+  if (!city) {
+    await respond("Please provide a city name, e.g., /birdie-weathertoday London");
+    return;
+  }
+
   try {
     const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
     const geoData = await geoRes.json();
 
     if (!geoData.results) {
-      await say(`Sorry, I couldn't find a city named ${city}.`);
+      await respond(`Sorry, I couldn't find a city named ${city}.`);
       return;
     }
 
@@ -169,10 +173,14 @@ app.command('/birdie-weathertoday', async ({ command, ack, say }) => {
 > 💧 Humidity: ${curr.relative_humidity_2m}%
 > 💨 Wind Speed: ${curr.wind_speed_10m} km/h`;
 
-    await say(message);
+    // 2. Respond to the channel
+    await respond({
+      text: message,
+      response_type: "in_channel"
+    });
     
   } catch (error) {
     console.error(error);
-    await say("Oops! Something went wrong fetching the weather.");
+    await respond("Oops! Something went wrong fetching the weather.");
   }
 });
