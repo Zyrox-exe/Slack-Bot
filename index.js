@@ -38,14 +38,14 @@ app.command("/birdie-ping", async ({ command, ack, respond }) => {
 app.command("/birdie-help", async ({ ack, respond }) => {
   await ack();
   await respond({
-    response_type: "in_channel",
     text: `Available Commands:
 /birdie-help - Open this menu
 /birdie-ping - Check bot latency
 /birdie-catfact - Get a cat fact
 /birdie-joke - Listen to a Joke
 /birdie-pixel - Get an image and a fact of the animal you choose!(The animal library is kinda small for now)
-/birdie-fact - Get a random (useless) fact`,
+/birdie-fact - Get a random (useless) fact
+/birdie-weathertoday - Check the today's weather(birds watch the sky better!)`,
   });
 });
 app.command("/birdie-catfact", async ({ ack, respond }) => {
@@ -138,5 +138,41 @@ app.command("/birdie-fact", async ({ ack, respond }) => {
   } catch (err) {
     console.error(err);
     await respond("Oops, couldn't grab a fact right now.");
+  }
+});
+
+app.command('/birdie-weathertoday', async ({ command, ack, say }) => {
+  // 1. ACKNOWLEDGE IMMEDIATELY
+  await ack(); 
+  
+  const city = command.text.trim();
+  
+  // 2. Perform the logic
+  try {
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+    const geoData = await geoRes.json();
+
+    if (!geoData.results) {
+      await say(`Sorry, I couldn't find a city named ${city}.`);
+      return;
+    }
+
+    const { latitude, longitude, name } = geoData.results[0];
+
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`);
+    const weatherData = await weatherRes.json();
+    const curr = weatherData.current;
+
+    const message = `Weather in ${name}:
+> 🌡️ Temperature: ${curr.temperature_2m}°C
+> 🤒 Feels like: ${curr.apparent_temperature}°C
+> 💧 Humidity: ${curr.relative_humidity_2m}%
+> 💨 Wind Speed: ${curr.wind_speed_10m} km/h`;
+
+    await say(message);
+    
+  } catch (error) {
+    console.error(error);
+    await say("Oops! Something went wrong fetching the weather.");
   }
 });
